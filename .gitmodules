@@ -1,0 +1,6 @@
+[submodule "bolt/backend/discord/dpp"]
+	path = bolt/backend/discord/dpp
+	url = https://github.com/brainboxdotcc/DPP
+[submodule "external/curlpp"]
+	path = external/curlpp
+	url = https://github.com/jpbarrette/curlpp
