@@ -51,13 +51,13 @@ class BoltSearchProvider(dbus.service.Object):
 
     @dbus.service.method(in_signature="as", out_signature="as", **SBN)
     def GetInitialResultSet(self, terms):
-        input_mesg = "".join(terms)
+        input_mesg = " ".join(terms)
         response = self.session.get(
             "http://bolt/predict", params={"input": input_mesg}
         )
-        # if response['score'] > 0.0:
-        return [response.json()["message"]]
-        # return []
+        if response.json()['status']:
+            return [response.json()["data"]]
+        return []
 
     @dbus.service.method(in_signature="as", out_signature="aa{sv}", **SBN)
     def GetResultMetas(self, ids):
@@ -68,13 +68,13 @@ class BoltSearchProvider(dbus.service.Object):
         return resp
     @dbus.service.method(in_signature='asas', out_signature='as', **SBN)
     def GetSubsearchResultSet(self, previous_results, new_terms):
-        input_mesg = "".join(new_terms)
+        input_mesg = " ".join(new_terms)
         response = self.session.get(
             "http://bolt/predict", params={"input": input_mesg}
         )
-        # if response['score'] > 0.0:
-        return [response.json()["message"]]
-        # return []
+        if response.json()['status']:
+            return [response.json()["data"]]
+        return []
     
     @dbus.service.method(in_signature="asu", terms="as", timestamp="u", **SBN)
     def LaunchSearch(self, terms, timestamp):

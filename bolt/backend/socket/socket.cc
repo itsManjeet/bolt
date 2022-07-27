@@ -4,6 +4,7 @@ using namespace bolt::backend;
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include "../../Debug.hh"
 #include "../../bolt.hh"
 #include "httplib.h"
 
@@ -73,7 +74,9 @@ bool Socket::start(Bolt* bolt) {
     if (request.has_param("input")) {
       std::string input = request.get_param_value("input");
       auto [score, message] = bolt->predict(input);
-      status = true;
+      if (score >= 50.0f) {
+        status = true;
+      }
       data = message;
     }
     res.set_content(string_format(RESPONSE_STRUCTURE, status ? "true" : "false",

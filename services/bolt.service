@@ -4,7 +4,7 @@ Requires=bolt.socket
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/bot
+ExecStart=/usr/bin/bot /etc/bolt.yml
 
 [Install]
 WantedBy=default.target

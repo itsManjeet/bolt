@@ -1,3 +1,4 @@
 hello:hey there
 how are you:i am fine
 what are you doing:enjoying life
+uefi:@shell#[ -e /sys/firmware/efi/efivars ] && echo "uefi supported" || echo "uefi not supported"

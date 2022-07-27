@@ -80,7 +80,7 @@ std::string Bolt::respond(std::string intention, std::string input) {
 
   if (intention.size() && intention[0] == '@') {
     size_t idx = intention.find_first_of('#');
-    plugin_id = intention.substr(1, idx);
+    plugin_id = intention.substr(1, idx - 1);
     data = intention.substr(idx + 1);
   }
   LOG("BOLT", "RESPONSE PLUGIN ID '" << plugin_id << "'");
@@ -107,7 +107,6 @@ std::tuple<float, std::string> Bolt::predict(std::string input) {
   }
   LOG("BOLT", "PREDICTION SCORE = '" << highScore << "'");
   LOG("BOLT", "PREDICTION DATA = '" << highIntention << "'");
-
   std::string response = respond(highIntention, input);
 
   return {highScore, response};

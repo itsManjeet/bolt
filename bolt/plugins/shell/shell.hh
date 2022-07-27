@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022 Manjeet Singh <https://github.com/itsmanjeet>
  *
- * Created Date: Wednesday, July 27th 2022, 11:52:33 am
+ * Created Date: Wednesday, July 27th 2022, 9:39:34 pm
  * Author: Manjeet Singh
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,16 +38,17 @@
  * ----------------------------------------------------------
  */
 
-#ifndef __BOLT_DEBUG_HH__
-#define __BOLT_DEBUG_HH__
+#ifndef __BOLT_PLUGINS_SHELL_HH__
+#define __BOLT_PLUGINS_SHELL_HH__
 
-#include <iostream>
-#ifdef DEBUG
-#define LOG(TAG, ...) \
-  std::cout << "[" << TAG << "]: " << __VA_ARGS__ << std::endl
-#else
-#define LOG(TAG, ...)
+#include "../plugin.hh"
 
-#endif
+namespace bolt::plugins {
+class Shell : public Plugin {
+ public:
+  Shell(YAML::Node const& node) : Plugin(node) {}
+  std::string respond(std::string intension, std::string data);
+};
+}  // namespace bolt::plugins
 
 #endif
