@@ -19,7 +19,8 @@ class Classifier : public Logic, public Trainable {
  public:
   Classifier(YAML::Node const& node);
 
-  bool train();
+  bool train(
+      std::vector<std::pair<std::string, std::string>> const& trainingData);
 
   std::tuple<float, std::string> predict(std::string input);
 };

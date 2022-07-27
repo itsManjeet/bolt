@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=dev.rlxos.Bolt.SearchProvider
+Exec=/usr/lib/bolt/gnome-search-provider.py
+SystemdService=dev.rlxos.Bolt.SearchProvider.service

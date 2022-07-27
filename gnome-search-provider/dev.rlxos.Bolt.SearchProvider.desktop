@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Categories=Accessories;
+Icon=download
+Name=bolt
+Comment=Bolt gnome search provider
+Terminal=false
+Type=Application
+OnlyShowIn=GNOME;

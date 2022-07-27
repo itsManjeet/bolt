@@ -1,0 +1,8 @@
+[Unit]
+Description=bolt search provider for GNOME
+Wants=org.gnome.GPaste.service
+
+[Service]
+Type=dbus
+BusName=dev.rlxos.Bolt.SearchProvider
+ExecStart=/usr/lib/bolt/gnome-search-provider.py

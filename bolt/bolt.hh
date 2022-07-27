@@ -25,8 +25,14 @@ class Bolt {
 
   static Bolt::ptr create(std::string filepath);
 
+  std::string respond(std::string intention, std::string input);
+
   std::tuple<float, std::string> predict(std::string input);
+
   std::string const& error() const { return mError; }
+
+  bool train(std::string logicId, std::string modelPath);
+  
   bool start();
 };
 }  // namespace bolt

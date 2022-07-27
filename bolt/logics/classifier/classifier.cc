@@ -1,33 +1,20 @@
 #include "classifier.hh"
 using namespace bolt::logics;
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 
 Classifier::Classifier(YAML::Node const& node) : Logic(node) {}
 
-bool Classifier::train() {
-  if (!mNode["model-path"]) {
-    return true;
-  }
-
+bool Classifier::train(
+    std::vector<std::pair<std::string, std::string>> const& trainingData) {
   std::string model_path = mNode["model-path"].as<std::string>();
-  if (!std::filesystem::exists(model_path)) {
-    mError = "model '" + model_path + "' not exists";
-    return false;
-  }
-
-  std::ifstream file(model_path);
-  std::string line;
-  while (std::getline(file, line)) {
-    size_t idx = line.find_first_of(':');
-    if (idx == std::string::npos) {
-      continue;
-    }
-
-    std::string intention = line.substr(0, idx);
-    std::string sentence = line.substr(idx + 1, line.size() - (idx + 1));
+  for (auto const& i : trainingData) {
+    std::string intention = i.second;
+    std::string sentence = i.first;
+    
     std::stringstream words(sentence);
     std::string word;
     while (words >> word) {

@@ -1,0 +1,10 @@
+[Unit]
+Description=bolt search provider for GNOME
+Requires=bolt.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bot
+
+[Install]
+WantedBy=default.target

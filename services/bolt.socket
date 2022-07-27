@@ -1,0 +1,11 @@
+[Unit]
+Description=bolt socket for API
+
+[Socket]
+ListenStream=/run/bolt.sock
+SocketMode=0660
+SocketUser=root
+SocketGroup=adm
+
+[Install]
+WantedBy=sockets.target

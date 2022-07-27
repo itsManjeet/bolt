@@ -12,7 +12,7 @@ namespace bolt::logics {
 class Logic {
  public:
   using ptr = std::shared_ptr<Logic>;
-  using List = std::vector<Logic::ptr>;
+  using List = std::vector<std::pair<std::string, Logic::ptr>>;
 
  protected:
   std::string mError;  //!< Holds the error message
@@ -47,7 +47,8 @@ class Trainable {
    * @return true on success
    * @return false on failure with error message set
    */
-  virtual bool train() = 0;
+  virtual bool train(std::vector<std::pair<std::string, std::string>> const&
+                         training_data) = 0;
 };
 }  // namespace bolt::logics
 
