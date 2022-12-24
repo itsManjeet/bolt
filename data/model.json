@@ -1,0 +1,28 @@
+{
+    "classWords": {
+        "ostree::switch": [
+            "switch",
+            "branch",
+            "devel",
+            "stable"
+        ],
+        "ostree::update": [
+            "update",
+            "system",
+            "upgrade",
+            "my",
+            "full"
+        ]
+    },
+    "corpusWords": {
+        "branch": 0.0,
+        "devel": 0.0,
+        "full": 1.0,
+        "my": 0.0,
+        "stable": 0.0,
+        "switch": 2.0,
+        "system": 1.0,
+        "update": 1.0,
+        "upgrade": 1.0
+    }
+}

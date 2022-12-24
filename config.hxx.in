@@ -1,0 +1,9 @@
+#ifndef __BOLT_CONFIG_HXX__
+#define __BOLT_CONFIG_HXX__
+
+#define PROJECT_NAME "@PROJECT_NAME@"
+#define PROJECT_VERSION "@PROJECT_VERSION@"
+
+#define BOLT_PLUGIN_DIR "@BOLT_PLUGIN_DIR@"
+#define BOLT_DATA_DIR "@BOLT_DATA_DIR@"
+#endif
