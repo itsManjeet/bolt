@@ -3,7 +3,7 @@ using namespace bolt::classifier;
 
 #include <algorithm>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 using namespace nlohmann;
 #include <sstream>
 
