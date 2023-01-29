@@ -8,20 +8,20 @@
 
 #include "Plugin.hxx"
 #include "classifier/Classifier.hxx"
-
+#include "config/config.hxx"
 namespace bolt {
 
 class Bolt {
    private:
     std::map<std::string, void*> handlers;
     std::unique_ptr<classifier::Classifier> classifier_;
-    std::string modelPath;
+    Config const* config;
     Context context;
 
     PluginFun getPluginFunction(std::string intension);
 
    public:
-    Bolt(std::string modelPath);
+    Bolt(Config const* config);
 
     void train(std::string trainFile);
 

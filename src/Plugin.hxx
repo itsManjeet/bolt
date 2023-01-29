@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "config/config.hxx"
 struct Context {
     std::string rawSentence;
     std::vector<std::string> tokens;
     std::list<std::pair<std::string, std::string>> previous;
+    bolt::Config const* config;
     bool isQuestion;
 };
 

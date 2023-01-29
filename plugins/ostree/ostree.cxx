@@ -50,8 +50,7 @@ PLUGIN_FUNCTION(main) {}
 
 PLUGIN_FUNCTION(update) {
     os << "checking and applying system updates." << std::endl;
-    auto [status, mesg] = exec("ostree admin upgrade");
-
+    auto [status, mesg] = exec("pkexec ostree admin upgrade");
     os << mesg;
 }
 

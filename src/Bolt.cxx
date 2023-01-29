@@ -8,21 +8,38 @@ using namespace bolt::classifier;
 
 #include <config.hxx>
 #include <filesystem>
+#include <iostream>
 
 #include "nlp/Tokenizer.hxx"
 
-Bolt::Bolt(std::string modelPath) : modelPath(modelPath) {
+#define DEBUG(...) \
+    if (config->debug) std::cerr << "DEBUG: " << __VA_ARGS__ << std::endl;
+
+Bolt::Bolt(Config const* config) : config{config} {
     classifier_ = std::make_unique<NaiveBayes>();
-    classifier_->load(modelPath);
+    DEBUG("loading model '" << config->model << "'");
+    classifier_->load(config->model);
 }
 
 void Bolt::train(std::string trainFile) {
     classifier_->train(trainFile);
-    classifier_->save(modelPath);
+    DEBUG("saving model '" << config->model << "'");
+    classifier_->save(config->model);
 }
 
 std::string Bolt::intension(std::string sentence) {
+    std::vector<std::string> words = nlp::tokenize(sentence);
     auto [intension, score] = classifier_->classify(sentence);
+
+    DEBUG("INTENSION: '" << intension << "'");
+    DEBUG("SCORE: '" << score << "'");
+
+    DEBUG("THRESHOLD: '" << config->threshold << "'");
+
+    if (score < config->threshold) {
+        DEBUG("SCORE BELOW THRESHOLD");
+        intension = "unknown";
+    }
     return intension;
 }
 
@@ -37,12 +54,23 @@ PluginFun Bolt::getPluginFunction(std::string intension) {
         pluginId = pluginId.substr(0, idx);
     }
 
-    std::string pluginPath = std::filesystem::path(BOLT_PLUGIN_DIR) /
-                             ("libBolt_" + pluginId + ".so");
+    std::string pluginPath;
+    bool found = false;
 
-    if (!std::filesystem::exists(pluginPath)) {
-        throw std::runtime_error("missing required plugin " + pluginPath);
+    for (auto path : config->plugin_path) {
+        pluginPath =
+            std::filesystem::path(path) / ("libBolt_" + pluginId + ".so");
+
+        if (std::filesystem::exists(pluginPath)) {
+            found = true;
+            break;
+        }
     }
+
+    if (!found) {
+        throw std::runtime_error("missing required plugin '" + pluginId + "'");
+    }
+
     if (handlers.find(pluginPath) == handlers.end()) {
         auto handler = dlopen(pluginPath.c_str(), RTLD_LAZY);
         if (handler == nullptr) {
@@ -74,6 +102,7 @@ void Bolt::respond(std::string sentence, std::ostream& os) {
     context.isQuestion = false;
     context.rawSentence = sentence;
     context.tokens = nlp::tokenize(sentence);
+    context.config = config;
     if (context.previous.size() >= 10) {
         context.previous.pop_front();
     }

@@ -42,30 +42,35 @@ float levenshteinDistance(std::string const& sent1, std::string const& sent2) {
 static std::map<std::string, std::vector<std::string>> knownMemory;
 
 PLUGIN_FUNCTION(main) {
-    std::ifstream reader(BOLT_DATA_DIR "/responses.txt");
-    if (!reader.good()) {
+    if (ctxt->config->responses.size() == 0) {
         os << "Sorry i have no idea about that";
         return;
     }
 
     if (knownMemory.size() == 0) {
-        std::string line;
-        std::string lastResponse;
-        std::vector<std::string> responses;
-        while (std::getline(reader, line)) {
-            if (line.size() == 0) {
+        for (auto const& i : ctxt->config->responses) {
+            std::ifstream reader(i);
+            if (!reader.good()) {
                 continue;
             }
+            std::string line;
+            std::string lastResponse;
+            std::vector<std::string> responses;
+            while (std::getline(reader, line)) {
+                if (line.size() == 0) {
+                    continue;
+                }
 
-            if (line[0] == '-') {
-                knownMemory[lastResponse].push_back(line.substr(1));
-                continue;
-            }
+                if (line[0] == '-') {
+                    knownMemory[lastResponse].push_back(line.substr(1));
+                    continue;
+                }
 
-            std::transform(line.begin(), line.end(), line.begin(), tolower);
-            lastResponse = line;
-            if (knownMemory.find(lastResponse) == knownMemory.end()) {
-                knownMemory[lastResponse] = std::vector<std::string>();
+                std::transform(line.begin(), line.end(), line.begin(), tolower);
+                lastResponse = line;
+                if (knownMemory.find(lastResponse) == knownMemory.end()) {
+                    knownMemory[lastResponse] = std::vector<std::string>();
+                }
             }
         }
     }
