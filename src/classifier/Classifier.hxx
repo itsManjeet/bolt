@@ -14,7 +14,7 @@ class Classifier {
 
    public:
     virtual ~Classifier() {}
-    virtual std::tuple<std::string, float> classify(
+    virtual std::vector<std::tuple<std::string, float>> classify(
         std::string const& query) = 0;
 
     void train(std::string filepath);

@@ -1,9 +1,25 @@
 #include <algorithm>
 #include <config.hxx>
 #include <fstream>
+#include <iterator>
 #include <map>
+#include <random>
 
 #include "../../src/Plugin.hxx"
+
+template <typename Iter, typename RandomGenerator>
+Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
+    std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
+    std::advance(start, dis(g));
+    return start;
+}
+
+template <typename Iter>
+Iter select_randomly(Iter start, Iter end) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    return select_randomly(start, end, gen);
+}
 
 float levenshteinDistance(std::string const& sent1, std::string const& sent2) {
     if (sent1.size() > sent2.size()) {
@@ -44,7 +60,7 @@ static std::map<std::string, std::vector<std::string>> knownMemory;
 PLUGIN_FUNCTION(main) {
     if (ctxt->config->responses.size() == 0) {
         os << "Sorry i have no idea about that";
-        return;
+        return true;
     }
 
     if (knownMemory.size() == 0) {
@@ -90,5 +106,9 @@ PLUGIN_FUNCTION(main) {
         }
     }
 
-    os << selectedResponses.back();
+    auto selected_response =
+        *select_randomly(selectedResponses.begin(), selectedResponses.end());
+
+    os << selected_response.substr(selected_response.find_first_not_of(' '));
+    return true;
 }

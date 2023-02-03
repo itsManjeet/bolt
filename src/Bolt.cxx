@@ -27,20 +27,10 @@ void Bolt::train(std::string trainFile) {
     classifier_->save(config->model);
 }
 
-std::string Bolt::intension(std::string sentence) {
+std::vector<std::tuple<std::string, float>> Bolt::intensions(
+    std::string sentence) {
     std::vector<std::string> words = nlp::tokenize(sentence);
-    auto [intension, score] = classifier_->classify(sentence);
-
-    DEBUG("INTENSION: '" << intension << "'");
-    DEBUG("SCORE: '" << score << "'");
-
-    DEBUG("THRESHOLD: '" << config->threshold << "'");
-
-    if (score < config->threshold) {
-        DEBUG("SCORE BELOW THRESHOLD");
-        intension = "unknown";
-    }
-    return intension;
+    return classifier_->classify(sentence);
 }
 
 PluginFun Bolt::getPluginFunction(std::string intension) {
@@ -50,7 +40,7 @@ PluginFun Bolt::getPluginFunction(std::string intension) {
     auto idx = pluginId.find_first_of(':');
 
     if (idx != std::string::npos) {
-        funPrefix = intension.substr(idx + 2);
+        funPrefix = intension.substr(idx + 1);
         pluginId = pluginId.substr(0, idx);
     }
 
@@ -89,15 +79,15 @@ PluginFun Bolt::getPluginFunction(std::string intension) {
 }
 
 void Bolt::respond(std::string sentence, std::ostream& os) {
-    auto pluginId = intension(sentence);
-    PluginFun fun;
-
-    try {
-        fun = getPluginFunction(pluginId);
-    } catch (std::runtime_error const& error) {
-        os << "ERROR: " << error.what();
-        return;
+    auto _intensions = intensions(sentence);
+    if (config->debug) {
+        DEBUG("THRESHOLD: " << config->threshold);
+        for (auto c : _intensions) {
+            DEBUG("INTENSION: " << std::get<0>(c)
+                                << " SCORE: " << (float)std::get<1>(c));
+        }
     }
+    PluginFun fun;
 
     context.isQuestion = false;
     context.rawSentence = sentence;
@@ -107,9 +97,29 @@ void Bolt::respond(std::string sentence, std::ostream& os) {
         context.previous.pop_front();
     }
     context.previous.push_back({sentence, ""});
-    try {
-        fun(&context, os);
-    } catch (std::exception const& exc) {
-        os << "ERROR: " << exc.what();
+
+    for (auto const& i : _intensions) {
+        std::string plugin_id = std::get<0>(i);
+        if (std::get<1>(i) < config->threshold) {
+            plugin_id = "unknown";
+        }
+        try {
+            fun = getPluginFunction(plugin_id);
+        } catch (std::runtime_error const& error) {
+            os << "ERROR: " << error.what();
+            return;
+        }
+
+        try {
+            if (fun(&context, os)) {
+                return;
+            }
+        } catch (std::exception const& exc) {
+            os << "ERROR: " << exc.what();
+        }
+
+        if (plugin_id == "unknown") {
+            break;
+        }
     }
 }

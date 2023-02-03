@@ -1,16 +1,15 @@
 
-net:search
-- what is this
-- who is 
-- search on internet
-- search on google
-- search on webostree::switch
+ostree:switch
 - switch branch
 - switch devel
 - switch to stable
 
-ostree::update
+ostree:update
 - update system
 - upgrade my system
 - full update
 - full upgrade
+search
+- find
+- search
+- where is

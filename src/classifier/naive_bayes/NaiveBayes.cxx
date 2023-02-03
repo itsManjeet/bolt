@@ -3,6 +3,7 @@ using namespace bolt::classifier;
 
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <json.hpp>
 using namespace nlohmann;
 #include <sstream>
@@ -50,18 +51,23 @@ float NaiveBayes::calculate(std::string const& sentence,
     return score;
 }
 
-std::tuple<std::string, float> NaiveBayes::classify(std::string const& query) {
+std::vector<std::tuple<std::string, float>> NaiveBayes::classify(
+    std::string const& query) {
+    std::vector<std::tuple<std::string, float>> solutions;
     float max_score = 0.0;
-    std::string targetIntension = "unknown";
-
     for (auto const& intension : classWords) {
         auto score = calculate(query, intension.first);
         if (score > max_score) {
             max_score = score;
-            targetIntension = intension.first;
         }
+        auto pos =
+            std::find_if(solutions.begin(), solutions.end(),
+                         [score](std::tuple<std::string, float> const& p) {
+                             return std::get<1>(p) < score;
+                         });
+        solutions.insert(pos, {intension.first, score});
     }
-    return {targetIntension, max_score};
+    return solutions;
 }
 
 void NaiveBayes::save(std::string outputfile) {

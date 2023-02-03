@@ -6,5 +6,5 @@ function (add_plugin name)
 endfunction (add_plugin)
 
 add_plugin(ostree)
-add_plugin(net)
+add_plugin(search)
 add_plugin(unknown)

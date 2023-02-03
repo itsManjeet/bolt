@@ -69,12 +69,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    if (!std::filesystem::exists(config.model)) {
-        std::cerr << "ERROR: missing bolt model at '" << config.model << "'"
-                  << std::endl;
-        return 1;
-    }
-
     if (training_txt.size() && !std::filesystem::exists(training_txt)) {
         std::cerr << "ERROR: missing training data at '" << training_txt << "'"
                   << std::endl;
@@ -91,7 +85,14 @@ int main(int argc, char** argv) {
         bot.train(training_txt);
     }
 
+    if (!std::filesystem::exists(config.model)) {
+        std::cerr << "ERROR: missing bolt model at '" << config.model << "'"
+                  << std::endl;
+        return 1;
+    }
+
     bot.respond(sentence, std::cout);
+    std::cout << std::endl;
 
     return 0;
 }

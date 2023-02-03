@@ -25,7 +25,8 @@ class Bolt {
 
     void train(std::string trainFile);
 
-    std::string intension(std::string sentence);
+    std::vector<std::tuple<std::string, float>> intensions(
+        std::string sentence);
 
     void respond(std::string sentence, std::ostream& os);
 };

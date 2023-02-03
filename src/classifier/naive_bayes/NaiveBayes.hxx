@@ -2,6 +2,7 @@
 #define __BOLT_CLASSIFIER_NAIVE_BAYES_HXX__
 
 #include <map>
+#include <tuple>
 #include <vector>
 
 #include "../Classifier.hxx"
@@ -22,7 +23,8 @@ class NaiveBayes : public Classifier {
    public:
     NaiveBayes() {}
     virtual ~NaiveBayes() {}
-    std::tuple<std::string, float> classify(std::string const& query);
+    std::vector<std::tuple<std::string, float>> classify(
+        std::string const& query);
 
     void save(std::string outputfile);
 

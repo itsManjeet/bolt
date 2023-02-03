@@ -1,9 +1,9 @@
-ostree::switch
+ostree:switch
 - switch branch
 - switch devel
 - switch to stable
 
-ostree::update
+ostree:update
 - update system
 - upgrade my system
 - full update

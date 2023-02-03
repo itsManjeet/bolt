@@ -1,6 +1,7 @@
 #ifndef __BOLT_NLP_TOKENIZER_HXX__
 #define __BOLT_NLP_TOKENIZER_HXX__
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -13,8 +14,8 @@ static std::vector<std::string> tokenize(std::string const& query) {
     std::vector<std::string> tokens;
 
     static std::vector<std::string> skippableWords = {
-        "to", "is", "am", "are", ".",    ",",
-        ":",  "on", "in", "the", "this", "that",
+        "to", "is", "am",  "are",  ".",    ",",  ":",
+        "on", "in", "the", "this", "that", "my",
     };
     while (std::getline(ss, token, ' ')) {
         if (token.size() == 0) continue;

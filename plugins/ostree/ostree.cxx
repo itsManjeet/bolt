@@ -46,23 +46,24 @@ std::vector<std::string> getOSTreeRemotes() {
     return refs;
 }
 
-PLUGIN_FUNCTION(main) {}
+PLUGIN_FUNCTION(main) { return false; }
 
 PLUGIN_FUNCTION(update) {
     os << "checking and applying system updates." << std::endl;
     auto [status, mesg] = exec("pkexec ostree admin upgrade");
     os << mesg;
+    return true;
 }
 
 PLUGIN_FUNCTION(switch) {
     if (ctxt->tokens.size() != 2) {
-        throw std::runtime_error(CRITICAL_SYSTEM_COMMAND_REQUIREMENT);
+        return false;
     }
     std::string refstr = ctxt->tokens[1];
 
     auto idx = refstr.find(':', 4);
     if ((refstr.find("ref:", 0) != 0) || (idx == std::string::npos)) {
-        throw std::runtime_error(CRITICAL_SYSTEM_COMMAND_REQUIREMENT);
+        return false;
     }
     refstr = refstr.substr(4);
 
@@ -96,4 +97,5 @@ PLUGIN_FUNCTION(switch) {
     }
     os << "successfully switch to " << ostreeRef
        << ", reboot you system to boot into the new ostree";
+    return true;
 }

@@ -15,9 +15,9 @@ struct Context {
     bool isQuestion;
 };
 
-using PluginFun = void (*)(Context*, std::ostream& os);
+using PluginFun = bool (*)(Context*, std::ostream& os);
 
 #define PLUGIN_FUNCTION(funId) \
-    extern "C" void Bolt_##funId(Context* ctxt, std::ostream& os)
+    extern "C" bool Bolt_##funId(Context* ctxt, std::ostream& os)
 
 #endif
