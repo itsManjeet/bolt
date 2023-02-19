@@ -22,17 +22,3 @@ add_subdirectory(src)
 add_subdirectory(plugins)
 add_subdirectory(cmd)
 add_subdirectory(data)
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-option(INSTALL_GMOCK "Install Googletest's GMock?" OFF)
-option(INSTALL_GTEST "Install Googletest's GTest?" OFF)
-
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-FetchContent_MakeAvailable(googletest)
-enable_testing()
-add_subdirectory(tests EXCLUDE_FROM_ALL)
-endif ()

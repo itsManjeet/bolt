@@ -18,7 +18,7 @@ class Bolt {
     Config const* config;
     Context context;
 
-    PluginFun getPluginFunction(std::string intension);
+    PluginFun getPluginFunction(std::string intension, Context* ctxt);
 
    public:
     Bolt(Config const* config);

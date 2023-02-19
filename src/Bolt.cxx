@@ -9,6 +9,7 @@ using namespace bolt::classifier;
 #include <config.hxx>
 #include <filesystem>
 #include <iostream>
+#include <optional>
 
 #include "nlp/Tokenizer.hxx"
 
@@ -33,7 +34,7 @@ std::vector<std::tuple<std::string, float>> Bolt::intensions(
     return classifier_->classify(sentence);
 }
 
-PluginFun Bolt::getPluginFunction(std::string intension) {
+PluginFun Bolt::getPluginFunction(std::string intension, Context* ctxt) {
     std::string funPrefix = "main";
 
     std::string pluginId = intension;
@@ -44,35 +45,69 @@ PluginFun Bolt::getPluginFunction(std::string intension) {
         pluginId = pluginId.substr(0, idx);
     }
 
-    std::string pluginPath;
-    bool found = false;
+    std::optional<Plugin> plugin;
 
     for (auto path : config->plugin_path) {
-        pluginPath =
+        auto pluginPath =
             std::filesystem::path(path) / ("libBolt_" + pluginId + ".so");
 
-        if (std::filesystem::exists(pluginPath)) {
-            found = true;
+        if (std::filesystem::exists(pluginPath) &&
+            std::filesystem::is_regular_file(pluginPath)) {
+            DEBUG("found plugin '" << pluginPath
+                                   << "' of type 'DynamicModule'");
+            plugin = Plugin{Plugin::Type::DynamicModule, pluginPath};
             break;
         }
-    }
 
-    if (!found) {
+        for (auto const& ext : std::map<std::string, Plugin::Type>{
+                 {".py", Plugin::Type::PythonScript},
+                 {".sh", Plugin::Type::ShellScript},
+                 {"", Plugin::Type::Executable},
+             }) {
+            pluginPath = std::filesystem::path(path) / (pluginId + ext.first);
+            if (std::filesystem::exists(pluginPath) &&
+                std::filesystem::is_regular_file(pluginPath)) {
+                plugin = Plugin{ext.second, pluginPath};
+                break;
+            }
+        }
+    }
+    if (!plugin.has_value()) {
         throw std::runtime_error("missing required plugin '" + pluginId + "'");
     }
+    PluginFun fun;
+    ctxt->plugin = plugin->path;
+    switch (plugin->type) {
+        case Plugin::Type::Executable:
+        case Plugin::Type::ShellScript:
+        case Plugin::Type::PythonScript:
+            fun = [](Context* ctxt, std::ostream& os) -> bool {
+                setenv("BOLT_IS_QUESTION", ctxt->isQuestion ? "1" : "0", 1);
+                setenv("BOLT_PLUGIN_PATH", ctxt->plugin.c_str(), 1);
+                setenv("BOLT_RAW_SENTENCE", ctxt->rawSentence.c_str(), 1);
+                std::string command = ctxt->plugin;
+                for (auto const& c : ctxt->tokens) {
+                    command += " " + c;
+                }
+                system(command.c_str());
+                return true;
+            };
+            break;
+        case Plugin::Type::DynamicModule: {
+            if (handlers.find(plugin->path) == handlers.end()) {
+                auto handler = dlopen(plugin->path.c_str(), RTLD_LAZY);
+                if (handler == nullptr) {
+                    throw std::runtime_error(dlerror());
+                }
+                handlers[plugin->path] = handler;
+            }
 
-    if (handlers.find(pluginPath) == handlers.end()) {
-        auto handler = dlopen(pluginPath.c_str(), RTLD_LAZY);
-        if (handler == nullptr) {
-            throw std::runtime_error(dlerror());
-        }
-        handlers[pluginPath] = handler;
-    }
-
-    PluginFun fun =
-        (PluginFun)dlsym(handlers[pluginPath], ("Bolt_" + funPrefix).c_str());
-    if (fun == nullptr) {
-        throw std::runtime_error(dlerror());
+            fun = PluginFun((bool (*)(Context*, std::ostream&))(
+                dlsym(handlers[plugin->path], ("Bolt_" + funPrefix).c_str())));
+            if (fun == nullptr) {
+                throw std::runtime_error(dlerror());
+            }
+        } break;
     }
 
     return fun;
@@ -96,6 +131,7 @@ void Bolt::respond(std::string sentence, std::ostream& os) {
     if (context.previous.size() >= 10) {
         context.previous.pop_front();
     }
+
     context.previous.push_back({sentence, ""});
 
     for (auto const& i : _intensions) {
@@ -104,7 +140,8 @@ void Bolt::respond(std::string sentence, std::ostream& os) {
             plugin_id = "unknown";
         }
         try {
-            fun = getPluginFunction(plugin_id);
+            DEBUG("EXECUTING PLUGIN " << plugin_id);
+            fun = getPluginFunction(plugin_id, &context);
         } catch (std::runtime_error const& error) {
             os << "ERROR: " << error.what();
             return;

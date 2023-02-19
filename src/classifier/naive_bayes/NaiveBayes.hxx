@@ -10,7 +10,7 @@
 namespace bolt::classifier {
 class NaiveBayes : public Classifier {
    private:
-    std::map<std::string, std::vector<std::string>> classWords;
+    std::map<std::string, std::map<std::string, float>> classWords;
     std::map<std::string, float> corpusWords;
 
     float calculate(std::string const& sentence, std::string const& intension);

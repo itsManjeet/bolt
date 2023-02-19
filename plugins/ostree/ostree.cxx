@@ -57,13 +57,15 @@ PLUGIN_FUNCTION(update) {
 
 PLUGIN_FUNCTION(switch) {
     if (ctxt->tokens.size() != 2) {
-        return false;
+        os << CRITICAL_SYSTEM_COMMAND_REQUIREMENT;
+        return true;
     }
     std::string refstr = ctxt->tokens[1];
 
     auto idx = refstr.find(':', 4);
     if ((refstr.find("ref:", 0) != 0) || (idx == std::string::npos)) {
-        return false;
+        os << CRITICAL_SYSTEM_COMMAND_REQUIREMENT;
+        return true;
     }
     refstr = refstr.substr(4);
 

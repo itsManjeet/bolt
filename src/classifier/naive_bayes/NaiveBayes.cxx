@@ -22,13 +22,9 @@ void NaiveBayes::train(std::vector<std::string>::const_iterator iter,
             }
 
             if (classWords.find(intension) == classWords.end()) {
-                classWords[intension] = std::vector<std::string>();
+                classWords[intension][token] = 0.0;
             }
-            if (std::find(classWords[intension].begin(),
-                          classWords[intension].end(),
-                          token) == classWords[intension].end()) {
-                classWords[intension].push_back(token);
-            }
+            classWords[intension][token] += 1.0;
         }
         iter++;
     }
@@ -43,9 +39,9 @@ float NaiveBayes::calculate(std::string const& sentence,
     }
 
     for (auto const& token : nlp::tokenize(sentence)) {
-        if (std::find(iter->second.begin(), iter->second.end(), token) !=
-            iter->second.end()) {
-            score += (1.0 / corpusWords[token]);
+        if (iter->second.find(token) != iter->second.end()) {
+            score +=
+                std::log(classWords[intension][token] / corpusWords[token]);
         }
     }
     return score;
@@ -92,9 +88,9 @@ void NaiveBayes::load(std::string modelfile) {
     corpusWords.clear();
 
     for (auto const& i : value["classWords"].items()) {
-        classWords[i.key()] = std::vector<std::string>();
-        for (auto const& j : i.value()) {
-            classWords[i.key()].push_back(j.get<std::string>());
+        classWords[i.key()] = std::map<std::string, float>();
+        for (auto const& j : i.value().items()) {
+            classWords[i.key()][j.key()] = j.value().get<float>();
         }
     }
 

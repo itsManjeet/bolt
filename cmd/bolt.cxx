@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
         .model = BOLT_DATA_DIR "/model.json",
         .responses = {BOLT_DATA_DIR "/responses.txt"},
         .plugin_path = {BOLT_PLUGIN_DIR},
-        .threshold = 0.02,
+        .threshold = 0.4,
     };
     std::string training_txt;
     std::string sentence, sep;
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
                               << std::endl;
                     return 1;
                 }
-                config.threshold = std::stoi(argv[++i]);
+                config.threshold = std::stof(argv[++i]);
             } else if (!strcmp(argv[i], "train")) {
                 if (argc <= i + 1) {
                     std::cerr << "ERROR: missing required arguments "
@@ -79,10 +79,16 @@ int main(int argc, char** argv) {
         sentence = "hey";
     }
 
-    bolt::Bolt bot(&config);
+    std::unique_ptr<bolt::Bolt> bolt;
+    try {
+        bolt = std::make_unique<bolt::Bolt>(&config);
+    } catch (std::exception const& ex) {
+        std::cerr << "ERROR: " << ex.what() << std::endl;
+        return 1;
+    }
 
     if (training_txt.size()) {
-        bot.train(training_txt);
+        bolt->train(training_txt);
     }
 
     if (!std::filesystem::exists(config.model)) {
@@ -91,7 +97,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    bot.respond(sentence, std::cout);
+    bolt->respond(sentence, std::cout);
     std::cout << std::endl;
 
     return 0;

@@ -97,7 +97,7 @@ PLUGIN_FUNCTION(main) {
 
     for (auto const& r : knownMemory) {
         auto distance = levenshteinDistance(r.first, ctxt->rawSentence);
-        if (distance < miminumDistance) {
+        if (distance < miminumDistance && r.second.size() > 0) {
             miminumDistance = distance;
             selectedResponses = r.second;
             if (distance == 0) {
