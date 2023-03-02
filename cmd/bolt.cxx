@@ -4,17 +4,51 @@
 
 #include <config.hxx>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <json.hpp>
 
 #include "../src/Plugin.hxx"
 
 int main(int argc, char** argv) {
+    char const* config_file = getenv("BOLT_CONFIG_FILE");
+    if (config_file == nullptr) config_file = "/etc/bolt.json";
+
     bolt::Config config{
         .model = BOLT_DATA_DIR "/model.json",
         .responses = {BOLT_DATA_DIR "/responses.txt"},
         .plugin_path = {BOLT_PLUGIN_DIR},
         .threshold = 0.4,
     };
+
+    if (std::filesystem::exists(config_file)) {
+        try {
+            auto reader = std::ifstream(config_file);
+            auto json_obj = nlohmann::json::parse(reader);
+
+            if (json_obj.find("model") != json_obj.end())
+                config.model = json_obj["model"].get<std::string>();
+
+            if (json_obj.find("threshold") != json_obj.end())
+                config.threshold = json_obj["threshold"].get<float>();
+
+            if (json_obj.find("responses") != json_obj.end()) {
+                json_obj.clear();
+                for (auto const& i : json_obj["responses"].items()) {
+                    config.responses.push_back(i.value().get<std::string>());
+                }
+            }
+
+            if (json_obj.find("plugin_path") != json_obj.end()) {
+                json_obj.clear();
+                for (auto const& i : json_obj["plugin_path"].items()) {
+                    config.plugin_path.push_back(i.value().get<std::string>());
+                }
+            }
+
+        } catch (...) {
+        }
+    }
     std::string training_txt;
     std::string sentence, sep;
     // parse input arguments
