@@ -8,13 +8,14 @@
 namespace bolt::classifier {
 class Classifier {
    protected:
-    virtual void train(std::vector<std::string>::const_iterator iter,
-                       std::vector<std::string>::const_iterator end,
-                       std::string intension) = 0;
+    virtual void train(std::vector<std::string>::const_iterator text_begin,
+                       std::vector<std::string>::const_iterator text_end,
+                       std::vector<std::string>::const_iterator label_begin,
+                       std::vector<std::string>::const_iterator label_end) = 0;
 
    public:
     virtual ~Classifier() {}
-    virtual std::vector<std::tuple<std::string, float>> classify(
+    virtual std::vector<std::tuple<std::string, double>> classify(
         std::string const& query) = 0;
 
     void train(std::string filepath);

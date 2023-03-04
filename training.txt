@@ -1,8 +1,6 @@
 
 ostree:switch
-- switch branch
-- switch devel
-- switch to stable
+- switch
 
 ostree:update
 - update system

@@ -28,20 +28,25 @@ void Bolt::train(std::string trainFile) {
     classifier_->save(config->model);
 }
 
-std::vector<std::tuple<std::string, float>> Bolt::intensions(
+std::vector<std::tuple<std::string, double>> Bolt::intentions(
     std::string sentence) {
     std::vector<std::string> words = nlp::tokenize(sentence);
+
+    // for using specific intention
+    if (words.size() && words[0][0] == '@') {
+        return {{words[0].substr(1), 100.00}};
+    }
     return classifier_->classify(sentence);
 }
 
-PluginFun Bolt::getPluginFunction(std::string intension, Context* ctxt) {
+PluginFun Bolt::getPluginFunction(const std::string& intention, Context* ctxt) {
     std::string funPrefix = "main";
 
-    std::string pluginId = intension;
+    std::string pluginId = intention;
     auto idx = pluginId.find_first_of(':');
 
     if (idx != std::string::npos) {
-        funPrefix = intension.substr(idx + 1);
+        funPrefix = intention.substr(idx + 1);
         pluginId = pluginId.substr(0, idx);
     }
 
@@ -114,10 +119,10 @@ PluginFun Bolt::getPluginFunction(std::string intension, Context* ctxt) {
 }
 
 void Bolt::respond(std::string sentence, std::ostream& os) {
-    auto _intensions = intensions(sentence);
+    auto _intentions = intentions(sentence);
     if (config->debug) {
         DEBUG("THRESHOLD: " << config->threshold);
-        for (auto c : _intensions) {
+        for (auto c : _intentions) {
             DEBUG("INTENSION: " << std::get<0>(c)
                                 << " SCORE: " << (float)std::get<1>(c));
         }
@@ -134,7 +139,7 @@ void Bolt::respond(std::string sentence, std::ostream& os) {
 
     context.previous.push_back({sentence, ""});
 
-    for (auto const& i : _intensions) {
+    for (auto const& i : _intentions) {
         std::string plugin_id = std::get<0>(i);
         if (std::get<1>(i) < config->threshold) {
             plugin_id = "unknown";

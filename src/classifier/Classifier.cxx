@@ -14,7 +14,8 @@ void Classifier::train(std::string filepath) {
 
     std::string line;
 
-    std::map<std::string, std::vector<std::string>> trainingData;
+    std::vector<std::string> intensionData;
+    std::vector<std::string> trainingData;
     std::string lastIntension = "none";
 
     while (std::getline(reader, line)) {
@@ -22,14 +23,13 @@ void Classifier::train(std::string filepath) {
             continue;
         }
         if (line[0] == '-') {
-            trainingData[lastIntension].push_back(line.substr(1));
+            trainingData.push_back(line.substr(1));
+            intensionData.push_back(lastIntension);
         } else {
             lastIntension = line;
-            trainingData[line] = std::vector<std::string>();
         }
     }
 
-    for (auto const& data : trainingData) {
-        train(data.second.begin(), data.second.end(), data.first);
-    }
+    train(trainingData.begin(), trainingData.end(),
+          intensionData.begin(), intensionData.end());
 }

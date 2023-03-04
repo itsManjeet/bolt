@@ -18,14 +18,14 @@ class Bolt {
     Config const* config;
     Context context;
 
-    PluginFun getPluginFunction(std::string intension, Context* ctxt);
+    PluginFun getPluginFunction(const std::string& intention, Context* ctxt);
 
    public:
     Bolt(Config const* config);
 
     void train(std::string trainFile);
 
-    std::vector<std::tuple<std::string, float>> intensions(
+    std::vector<std::tuple<std::string, double>> intentions(
         std::string sentence);
 
     void respond(std::string sentence, std::ostream& os);
