@@ -205,7 +205,8 @@ Project Link: [https://github.com/itsmanjeet/bolt](https://github.com/itsmanjeet
 
 ## Special Thanks
 
-![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png)
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="Logo" width="80" height="80">
+
 [JetBrain OpenSource Support](https://jb.gg/OpenSourceSupport)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
