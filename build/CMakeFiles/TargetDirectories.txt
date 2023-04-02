@@ -1,0 +1,10 @@
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/LIBbolt.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/bolt.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/ostree.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/greeting.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/edit_cache.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/rebuild_cache.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/list_install_components.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/install.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/install/local.dir
+/var/home/itsmanjeet/Projects/bolt/build/CMakeFiles/install/strip.dir

@@ -1,36 +1,65 @@
-#ifndef __BOLT_HXX__
-#define __BOLT_HXX__
+#ifndef BOLT_BOLT_HXX
+#define BOLT_BOLT_HXX
 
-#include <functional>
-#include <map>
+#include "Model.hxx"
+#include "Responder.hxx"
+#include "Listener.hxx"
+#include "json.hpp"
+#include <variant>
+
+using namespace nlohmann;
+
 #include <memory>
-#include <string>
 
-#include "Plugin.hxx"
-#include "classifier/Classifier.hxx"
-#include "config/config.hxx"
 namespace bolt {
 
-class Bolt {
-   private:
-    std::map<std::string, void*> handlers;
-    std::unique_ptr<classifier::Classifier> classifier_;
-    Config const* config;
-    Context context;
+    class Bolt {
+    private:
+        Model *model{nullptr};
+        Listener *listener{nullptr};
+        Responder *responder{nullptr};
+        json config;
+        std::string error_;
+        json knowlegde;
 
-    PluginFun getPluginFunction(const std::string& intention, Context* ctxt);
+        bool execute(std::string intension, std::string const &sentence);
 
-   public:
-    Bolt(Config const* config);
+    public:
+        Bolt(std::string const &configFile);
 
-    void train(std::string trainFile);
+        virtual ~Bolt();
 
-    std::vector<std::tuple<std::string, double>> intentions(
-        std::string sentence);
+        bool init();
 
-    void respond(std::string sentence, std::ostream& os);
-};
+        std::string listen() { return listener->listen(); }
 
-}  // namespace bolt
+        void say(std::string const &response) { responder->respond(response); }
 
-#endif
+        void say(std::vector<std::string> const &responses);
+
+        void respond(std::string const &sentence);
+
+        void train(std::string const &trainingFile);
+
+        template<typename T>
+        void remember(std::string const &id, T value) {
+            knowlegde[id] = value;
+        }
+
+
+        template<typename T>
+        T recall(std::string const &id, T fallback) {
+            if (knowlegde.contains(id)) {
+                return knowlegde[id].get<T>();
+            }
+            return fallback;
+        }
+
+    };
+
+} // bolt
+
+#define PLUGIN(id) constexpr auto PLUGIN_ID = #id; \
+extern "C" bool BOLT_PLUGIN(std::string const& sentence, bolt::Bolt* bolt)
+
+#endif //BOLT_BOLT_HXX

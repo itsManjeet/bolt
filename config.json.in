@@ -1,0 +1,14 @@
+{
+  "listener": {
+    "type": "stream",
+    "stream": "cin"
+  },
+  "responder": {
+    "type": "stream",
+    "stream": "cout"
+  },
+  "model": "@CMAKE_INSTALL_DATADIR@/bolt/model.json",
+  "plugin-path": [
+    "@CMAKE_INSTALL_LIBEXECDIR@/bolt/"
+  ]
+}

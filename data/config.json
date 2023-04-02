@@ -1,0 +1,16 @@
+{
+  "listener": {
+    "type": "stream",
+    "stream": "cin"
+  },
+  "responder": {
+    "type": "stream",
+    "stream": "cout"
+  },
+  "train": "./training.txt",
+  "model": "data/model.json",
+  "plugin-path": [
+    "cmake-build-debug/"
+  ],
+  "knowledge": "knowledge.json"
+}

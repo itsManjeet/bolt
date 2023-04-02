@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -Wl,-soname,greeting.so -o greeting.so CMakeFiles/greeting.dir/plugins/greeting/greeting.cxx.o  -Wl,-rpath,/var/home/itsmanjeet/Projects/bolt/build: libbolt.so -lpipewire-0.3 -lvosk /usr/lib/x86_64-linux-gnu/libespeak-ng.so 

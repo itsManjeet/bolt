@@ -7,7 +7,20 @@ ostree:update
 - upgrade my system
 - full update
 - full upgrade
+
+greeting
+- hey
+- hello
+- how are you
+- what are you doing
+
 search
 - find
 - search
 - where is
+
+%%
+
+how are you
+- i am fine
+- fine thanks you

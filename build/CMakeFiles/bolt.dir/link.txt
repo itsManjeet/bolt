@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/bolt.dir/main.cxx.o -o bolt  -Wl,-rpath,/var/home/itsmanjeet/Projects/bolt/build: libbolt.so -lpipewire-0.3 -lvosk /usr/lib/x86_64-linux-gnu/libespeak-ng.so 
