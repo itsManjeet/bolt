@@ -9,7 +9,7 @@ using namespace bolt;
 
 using namespace nlohmann;
 
-#include "Tokenizer.hxx"
+#include "nlp.hxx"
 
 void Model::train(std::vector<std::string>::const_iterator text_begin,
                   std::vector<std::string>::const_iterator text_end,
@@ -50,26 +50,28 @@ void Model::train(std::vector<std::string>::const_iterator text_begin,
 std::vector<std::pair<std::string, float>> Model::classify(
         std::string const &query) {
     std::vector<std::pair<std::string, float>> solutions;
-    float max_score = -INFINITY;
+    float max_probability = 0.0;
+    float sum_probability = 0.0;
     for (auto const &intension: classes) {
-        float score = log(classCount[intension]);
+        float probability = classCount[intension] * (1.0 / classCount.size());
         for (auto const &word: nlp::tokenize(query)) {
             if (wordCount[intension].find(word) != wordCount[intension].end()) {
-                score += log(wordCount[intension][word] + 1) - log(classCount[intension] + vocabulary.size());
+                probability *=
+                        (wordCount[intension][word] + 1.0) / (classCount[intension] + wordCount[intension].size());
             } else {
-                score += log(1) - log(classCount[intension] + vocabulary.size());
+                probability *= 1.0 / (classCount[intension] + wordCount[intension].size());
             }
         }
-        if (score > max_score) {
-            max_score = score;
+        sum_probability += probability;
+        if (probability > max_probability) {
+            max_probability = probability;
         }
-        auto pos =
-                std::find_if(solutions.begin(), solutions.end(),
-                             [score](std::tuple<std::string, float> const &p) {
-                                 return std::get<1>(p) < score;
-                             });
-        solutions.insert(pos, {intension, score});
+        solutions.push_back({intension, probability});
     }
+    std::sort(solutions.begin(), solutions.end(), [](auto const& lhs, auto const &rhs) -> bool {
+        return lhs.second > rhs.second;
+    });
+
     return solutions;
 }
 
@@ -196,7 +198,7 @@ float Model::levenshteinDistance(std::string const &sent1, std::string const &se
         }
     }
 
-    return 1 - (distance[minSize] / maxSize);
+    return 1.0 - ((float)distance[minSize] / (float)maxSize);
 }
 
 
@@ -204,18 +206,15 @@ std::pair<std::vector<std::string>, float> Model::fuzzySearch(const std::string 
     std::vector<std::string> res = {
             "Sorry i have no idea about that",
     };
-    float minimumDistance = 1.0;
+    float bestScore = 0.0;
 
     for (auto const &i: responses) {
-        auto normalizedDistance = levenshteinDistance(i.first, query);
-        if (normalizedDistance < minimumDistance) {
-            minimumDistance = normalizedDistance;
+        auto score = levenshteinDistance(i.first, query);
+        if (score > bestScore) {
+            bestScore = score;
             res = i.second;
-            if (minimumDistance == 0.0) {
-                break;
-            }
         }
     }
 
-    return {res, minimumDistance};
+    return {res, bestScore};
 }

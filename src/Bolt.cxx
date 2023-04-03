@@ -28,9 +28,13 @@ void Bolt::respond(const std::string &sentence) {
     auto intensions = model->classify(sentence);
     auto [responses, responseScore] = model->fuzzySearch(sentence);
 
-    if (intensions.size() && intensions[0].second < responseScore) {
+    if (!knowlegde.contains("history")) knowlegde["history"] = std::vector<std::string>();
+    knowlegde["history"].push_back("-" + sentence);
+
+    if (intensions.size() && intensions[0].second > responseScore) {
         for (auto const &i: intensions) {
             if (execute(i.first, sentence)) {
+                knowlegde["history"].push_back("$" + i.first);
                 return;
             }
         }
@@ -109,6 +113,8 @@ void Bolt::say(const std::vector<std::string> &responses) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, responses.size() - 1);
     auto idx = dis(gen);
-    say(responses[idx]);
+    auto resp = responses[idx];
+    say(resp);
+    knowlegde["history"].push_back(resp);
 }
 

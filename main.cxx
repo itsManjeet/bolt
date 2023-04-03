@@ -2,7 +2,7 @@
 #include "src/Bolt.hxx"
 
 #include <iostream>
-#include "src/Tokenizer.hxx"
+#include "src/nlp.hxx"
 
 int main(int argc, char **argv) {
     std::string config_file = "/etc/bolt.json";

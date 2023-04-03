@@ -22,5 +22,6 @@ namespace bolt {
 
     void StreamResponder::respond(const std::string &query) {
         ostream->write(query.c_str(), query.size());
+        ostream->write("\n", 1);
     }
 } // bolt

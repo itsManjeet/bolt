@@ -21,11 +21,12 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(PIPEWIRE REQUIRED libpipewire-0.3)
 find_library(VOSK vosk REQUIRED)
 find_library(ESPEAK_NG espeak-ng REQUIRED)
+find_library(CURL curl REQUIRED)
 
 include_directories(${PIPEWIRE_INCLUDE_DIRS})
 file(GLOB LibBolt_Src "src/*.cxx" "src/*.hxx")
 add_library(LIB${PROJECT_NAME} SHARED ${LibBolt_Src})
-target_link_libraries(LIB${PROJECT_NAME} PUBLIC ${PIPEWIRE_LIBRARIES} ${VOSK} ${ESPEAK_NG})
+target_link_libraries(LIB${PROJECT_NAME} PUBLIC ${PIPEWIRE_LIBRARIES} ${VOSK} ${ESPEAK_NG} ${CURL})
 set_target_properties(LIB${PROJECT_NAME}
         PROPERTIES
         OUTPUT_NAME ${PROJECT_NAME})
@@ -52,6 +53,8 @@ endfunction()
 
 add_plugin(ostree)
 add_plugin(greeting)
+add_plugin(joke)
+add_plugin(reminder)
 
 install(TARGETS LIB${PROJECT_NAME} ${PROJECT_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

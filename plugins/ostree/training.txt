@@ -1,8 +1,0 @@
-ostree:switch
-- switch
-
-ostree:update
-- update system
-- upgrade my system
-- full update
-- full upgrade
