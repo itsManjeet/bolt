@@ -27,11 +27,11 @@ Bolt::~Bolt() {
 void Bolt::respond(const std::string &sentence) {
     auto intensions = model->classify(sentence);
     auto [responses, responseScore] = model->fuzzySearch(sentence);
-
+    responseScore *= 0.1; // decrese the priority of fuzzySearch
     if (!knowlegde.contains("history")) knowlegde["history"] = std::vector<std::string>();
     knowlegde["history"].push_back("-" + sentence);
 
-    if (intensions.size() && intensions[0].second > responseScore) {
+    if (intensions.size() && intensions[0].second > responseScore && intensions[0].second > 0.08) {
         for (auto const &i: intensions) {
             if (execute(i.first, sentence)) {
                 knowlegde["history"].push_back("$" + i.first);
