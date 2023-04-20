@@ -11,7 +11,7 @@
 namespace bolt::nlp {
 
     // TODO: added tagging?
-    static std::vector<std::string> tokenize(std::string const &query) {
+    static std::vector<std::string> tokenize(std::string const &query, bool skip=true) {
         std::stringstream ss(query);
         std::string token;
         std::vector<std::string> tokens;
@@ -23,7 +23,7 @@ namespace bolt::nlp {
         while (std::getline(ss, token, ' ')) {
             if (token.size() == 0) continue;
             if (std::find(skippableWords.begin(), skippableWords.end(), token) !=
-                skippableWords.end()) {
+                skippableWords.end() && skip) {
                 continue;
             }
             std::transform(token.begin(), token.end(), token.begin(), tolower);

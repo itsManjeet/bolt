@@ -118,3 +118,10 @@ void Bolt::say(const std::vector<std::string> &responses) {
     knowlegde["history"].push_back(resp);
 }
 
+void Bolt::train(const std::string &trainingFile) {
+    delete model;
+    model = new Model();
+
+    model->train(trainingFile);
+}
+
