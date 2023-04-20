@@ -20,7 +20,8 @@ Bolt::~Bolt() {
     std::ofstream knowledge_writer(std::filesystem::path(getenv("HOME")) / ".knowledge.json");
     knowledge_writer << knowlegde;
 
-    model->save(config["model"].get<std::string>());
+    if (model != nullptr)
+        model->save(config["model"].get<std::string>());
 }
 
 
@@ -118,10 +119,12 @@ void Bolt::say(const std::vector<std::string> &responses) {
     knowlegde["history"].push_back(resp);
 }
 
-void Bolt::train(const std::string &trainingFile) {
+void Bolt::train(const std::string &trainingFile, const std::string &outputModel) {
     delete model;
     model = new Model();
-
     model->train(trainingFile);
+    model->save(outputModel);
+    delete model;
+    model = nullptr;
 }
 

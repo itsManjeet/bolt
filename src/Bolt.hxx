@@ -39,7 +39,7 @@ namespace bolt {
 
         void respond(std::string const &sentence);
 
-        void train(std::string const &trainingFile);
+        void train(std::string const &trainingFile, const std::string &outputModel);
 
         template<typename T>
         void remember(std::string const &id, T value) {
